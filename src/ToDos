@@ -1,0 +1,10 @@
+- Password hashing:
+   Passwords stored at server side: salt, hash(hash(pw) + salt) = stored
+
+   LOGIN:
+   1. Web -- session start -> server
+   2. Web <- hash(snonce) -- server
+   3. Web -- hash(pw) xor hash(snonce) xor hash(cnonce) -> server
+   4. server: hash(pw) = response xor hash(snonce) xor hash(cnonce)
+              hash(hash(pw) + salt) == stored
+   5. Web <- accept / reject -- server
