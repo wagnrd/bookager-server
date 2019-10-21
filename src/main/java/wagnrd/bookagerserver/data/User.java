@@ -3,9 +3,9 @@ package wagnrd.bookagerserver.data;
 import lombok.Data;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
-import javax.persistence.ManyToMany;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.Set;
 
 @Data
@@ -15,7 +15,7 @@ public class User {
     private String name;
     private String passwordHash;
 
-    private @ManyToMany(targetEntity = Book.class) Set books;
+    private @OneToMany(targetEntity = Book.class) Set books;
 
     public User() {}
 

@@ -1,40 +1,49 @@
 package wagnrd.bookagerserver.login;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
+import wagnrd.bookagerserver.data.Session;
 import wagnrd.bookagerserver.data.User;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class SessionManager {
-    private Map<String, Session> sessions = new HashMap<>();
-    private SecureRandom random = new SecureRandom();
+    private final Map<String, Session> sessions = new HashMap<>();
+    private final SecureRandom random = new SecureRandom();
+    private byte[] randomBytes = new byte[8];
 
     public String createSession(User user) {
         String authKey;
 
         do {
-            byte[] randomBytes = new byte[128];
             random.nextBytes(randomBytes);
             authKey = HexUtils.toHexString(randomBytes);
         } while (sessions.containsKey(authKey));
 
-        Session session = new Session(authKey, user, this);
+        sessions.put(authKey, new Session(authKey, user, this));
+        log.info("Session \"" + authKey + "\": CREATED");
 
         return authKey;
     }
 
-    public void touch(String authKey) throws SessionExpiredException {
+    public void touch(String authKey) throws InvalidSessionException {
         if (sessions.containsKey(authKey))
             sessions.get(authKey).updateExpirationTime();
         else
-            throw new SessionExpiredException();
+            throw new InvalidSessionException();
     }
 
-    public void delete(String authKey) {
-        sessions.remove(authKey);
+    public void delete(String authKey) throws InvalidSessionException {
+        if (sessions.containsKey(authKey)) {
+            log.info("Session \"" + authKey + "\": DELETED");
+            sessions.get(authKey).interrupt();
+            sessions.remove(authKey);
+        } else {
+            throw new InvalidSessionException();
+        }
     }
 
 }
