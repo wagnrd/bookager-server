@@ -8,3 +8,5 @@
    4. server: hash(pw) = response xor hash(snonce) xor hash(cnonce)
               hash(hash(pw) + salt) == stored
    5. Web <- accept / reject -- server
+
+   Use hash method with MessageDigest

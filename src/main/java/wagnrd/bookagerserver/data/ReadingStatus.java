@@ -1,6 +1,6 @@
 package wagnrd.bookagerserver.data;
 
-public enum Status {
+public enum ReadingStatus {
     UNREAD,
     READING,
     READ,

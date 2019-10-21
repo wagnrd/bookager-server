@@ -13,14 +13,14 @@ import java.util.Set;
 public class User {
     private @Id @GeneratedValue Long id;
     private String name;
-    private String hash;
+    private String passwordHash;
 
     private @ManyToMany(targetEntity = Book.class) Set books;
 
     public User() {}
 
-    public User(String name, String hash) {
+    public User(String name, String passwordHash) {
         this.name = name;
-        this.hash = hash;
+        this.passwordHash = passwordHash;
     }
 }

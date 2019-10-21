@@ -9,18 +9,18 @@ import javax.persistence.GeneratedValue;
 @Data
 @Entity
 public class Book {
-    private @Id @GeneratedValue Long Id;
+    private @Id @GeneratedValue Long id;
     private String title;
     private String author;
     private Short year;
-    private Status status;
+    private ReadingStatus status;
     private Byte rating;
     private String description;
     private String comments;
 
     public Book() {}
 
-    public Book(String title, String author, Short year, Status status, Byte rating, String description, String comments) {
+    public Book(String title, String author, Short year, ReadingStatus status, Byte rating, String description, String comments) {
         this.title = title;
         this.author = author;
         this.year = year;
