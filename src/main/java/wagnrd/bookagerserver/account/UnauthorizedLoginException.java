@@ -1,4 +1,4 @@
-package wagnrd.bookagerserver.login;
+package wagnrd.bookagerserver.account;
 
 public class UnauthorizedLoginException extends RuntimeException {
     public UnauthorizedLoginException() {

@@ -1,4 +1,4 @@
-package wagnrd.bookagerserver.login;
+package wagnrd.bookagerserver.account;
 
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -10,10 +10,11 @@ import wagnrd.bookagerserver.data.User;
 @RestController
 public class AccountController {
     private final UserRepository userRepository;
-    private final SessionManager sessionManager = new SessionManager();
+    private final SessionManager sessionManager;
 
     public AccountController(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.sessionManager = SessionManager.getInstance();
     }
 
     @PostMapping("/login")

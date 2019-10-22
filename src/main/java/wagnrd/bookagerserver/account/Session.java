@@ -1,6 +1,6 @@
-package wagnrd.bookagerserver.data;
+package wagnrd.bookagerserver.account;
 
-import wagnrd.bookagerserver.login.SessionManager;
+import wagnrd.bookagerserver.data.User;
 
 public class Session extends Thread {
     private final long keyDuration = 30_000_000L; // 30 mins
