@@ -1,6 +1,7 @@
 package wagnrd.bookagerserver.data;
 
 import lombok.Data;
+import org.springframework.data.domain.Example;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +11,7 @@ import javax.persistence.Id;
 @Entity
 public class Book {
     private @Id @GeneratedValue Long id;
-    private Long bookShelfId;
+    private Long bookshelfId;
 
     private String title;
     private String author;
@@ -33,4 +34,13 @@ public class Book {
         this.description = description;
         this.comments = comments;
     }
+
+    // Bookshelf id query
+    public static Example<Book> boockshelfIdQuery(Long bookshelfId) {
+        var book = new Book();
+        book.bookshelfId = bookshelfId;
+
+        return Example.of(book);
+    }
+
 }

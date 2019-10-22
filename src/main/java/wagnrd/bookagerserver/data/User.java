@@ -4,8 +4,6 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.Set;
 
 @Data
 @Entity
@@ -13,7 +11,7 @@ public class User {
     private @Id String name;
     private String passwordHash;
 
-    private @OneToMany(mappedBy = "owner") Set<BookShelf> bookShelves;
+    //private @OneToMany(mappedBy = "owner") Set<Bookshelf> bookshelves;
 
     public User() {}
 
