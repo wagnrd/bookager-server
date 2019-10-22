@@ -1,7 +1,8 @@
-package wagnrd.bookagerserver.account;
+package wagnrd.bookagerserver;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
+import wagnrd.bookagerserver.account.InvalidSessionException;
 import wagnrd.bookagerserver.data.User;
 
 import java.security.SecureRandom;

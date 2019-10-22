@@ -1,4 +1,4 @@
-package wagnrd.bookagerserver.bookshelf;
+package wagnrd.bookagerserver.book;
 
 public class BookNotFoundException extends RuntimeException {
     public BookNotFoundException() {

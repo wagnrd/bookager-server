@@ -1,0 +1,94 @@
+package wagnrd.bookagerserver.book;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import wagnrd.bookagerserver.SessionManager;
+import wagnrd.bookagerserver.data.Book;
+import wagnrd.bookagerserver.data.BookRepository;
+
+import java.lang.reflect.Field;
+import java.util.List;
+
+@RestController
+public class BookController {
+    private final BookRepository bookRepository;
+    private final SessionManager sessionManager;
+
+    public BookController(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+        this.sessionManager = SessionManager.getInstance();
+    }
+
+    @GetMapping("/books")
+    List<Book> all(@RequestHeader(value = "X-Auth-Key") String authKey) {
+        var user = sessionManager.getSessionUser(authKey);
+        return bookRepository.findAll(Book.ownerQuery(user.getName()));
+    }
+
+    @GetMapping("/books/{id}")
+    Book get(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
+        var user = sessionManager.getSessionUser(authKey);
+
+        var book = bookRepository
+                .findById(id)
+                .orElseThrow(BookNotFoundException::new);
+
+        // make sure the book belongs to the requesting user
+        if (book.getOwner().equals(user.getName()))
+            return book;
+        else
+            throw new BookNotFoundException();
+    }
+
+    @PostMapping("/books")
+    ResponseEntity<?> add(@RequestHeader(value = "X-Auth-Key") String authKey, @RequestBody Book newBook) {
+        var user = sessionManager.getSessionUser(authKey);
+        newBook.setOwner(user.getName());     // make sure the real owner cannot be spoofed
+        bookRepository.save(newBook);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(newBook);
+    }
+
+    @PutMapping("/books/{id}")
+    Book update(@RequestHeader(value = "X-Auth-Key") String authKey, @RequestBody Book newBook, @PathVariable Long id) {
+        var book = get(authKey, id);
+
+        book.setTitle(newBook.getTitle());
+        book.setAuthor(newBook.getAuthor());
+        book.setStatus(newBook.getStatus());
+        book.setYear(newBook.getYear());
+        book.setRating(newBook.getRating());
+        book.setDescription(newBook.getDescription());
+        book.setComment(newBook.getComment());
+        book.setBookshelfId(newBook.getBookshelfId());
+
+        return bookRepository.save(book);
+    }
+
+    @PutMapping("/books/{id}/{attribute}/{value}")
+    Book update(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id, @PathVariable String attribute, @PathVariable String value) {
+        var book = get(authKey, id);
+
+        try {
+            Field field = Book.class.getDeclaredField(attribute);
+            field.setAccessible(true);
+            field.set(book, value);
+
+            return bookRepository.save(book);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            // TODO: throw exception
+            return book;
+        }
+    }
+
+    @DeleteMapping("/books/{id}")
+    ResponseEntity<?> delete(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
+        var book = get(authKey, id);
+        bookRepository.delete(book);
+
+        return ResponseEntity.noContent().build();
+    }
+}

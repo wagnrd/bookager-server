@@ -1,4 +1,4 @@
-package wagnrd.bookagerserver.account;
+package wagnrd.bookagerserver;
 
 import wagnrd.bookagerserver.data.User;
 

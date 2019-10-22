@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Example;
 import wagnrd.bookagerserver.data.Bookshelf;
+import wagnrd.bookagerserver.data.BookshelfRepository;
 import wagnrd.bookagerserver.data.User;
+import wagnrd.bookagerserver.data.UserRepository;
 
 import java.util.HashSet;
 import java.util.Set;

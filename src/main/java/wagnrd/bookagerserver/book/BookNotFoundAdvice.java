@@ -1,4 +1,4 @@
-package wagnrd.bookagerserver.bookshelf;
+package wagnrd.bookagerserver.book;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
