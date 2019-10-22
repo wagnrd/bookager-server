@@ -8,11 +8,11 @@ import wagnrd.bookagerserver.UserRepository;
 import wagnrd.bookagerserver.data.User;
 
 @RestController
-public class LoginController {
+public class AccountController {
     private final UserRepository userRepository;
     private final SessionManager sessionManager = new SessionManager();
 
-    public LoginController(UserRepository userRepository) {
+    public AccountController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -33,5 +33,16 @@ public class LoginController {
     @GetMapping("/logout")
     void logout(@RequestHeader(value = "X-Auth-Key") String authKey) {
         sessionManager.delete(authKey);
+    }
+
+    @PostMapping("/register")
+    ResponseEntity<?> register(@RequestBody User user) {
+        if (!userRepository.existsById(user.getName())) {
+            return login(userRepository.save(user));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
     }
 }

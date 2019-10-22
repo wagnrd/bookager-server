@@ -3,8 +3,9 @@ package wagnrd.bookagerserver.data;
 import lombok.Data;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -20,7 +21,8 @@ public class Book {
 
     public Book() {}
 
-    public Book(String title, String author, Short year, ReadingStatus status, Byte rating, String description, String comments) {
+    public Book(@NotNull String title, @NotNull String author, Short year, @NotNull ReadingStatus status, Byte rating,
+                String description, String comments) {
         this.title = title;
         this.author = author;
         this.year = year;
