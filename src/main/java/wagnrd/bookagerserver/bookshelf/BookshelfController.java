@@ -3,23 +3,24 @@ package wagnrd.bookagerserver.bookshelf;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wagnrd.bookagerserver.BookRepository;
-import wagnrd.bookagerserver.BookshelfRepository;
-import wagnrd.bookagerserver.account.SessionManager;
+import wagnrd.bookagerserver.SessionManager;
+import wagnrd.bookagerserver.data.Book;
+import wagnrd.bookagerserver.data.BookRepository;
 import wagnrd.bookagerserver.data.Bookshelf;
+import wagnrd.bookagerserver.data.BookshelfRepository;
 
 import java.util.List;
 
 @RestController
 public class BookshelfController {
-    private final BookRepository bookRepository;
     private final BookshelfRepository bookshelfRepository;
+    private final BookRepository bookRepository;
     private final SessionManager sessionManager;
 
-    public BookshelfController(BookRepository bookRepository, BookshelfRepository bookshelfRepository) {
-        this.bookRepository = bookRepository;
+    public BookshelfController(BookshelfRepository bookshelfRepository, BookRepository bookRepository) {
         this.bookshelfRepository = bookshelfRepository;
-        sessionManager = SessionManager.getInstance();
+        this.bookRepository = bookRepository;
+        this.sessionManager = SessionManager.getInstance();
     }
 
     @GetMapping("/bookshelves")
@@ -69,5 +70,11 @@ public class BookshelfController {
         bookshelfRepository.delete(bookshelf);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/bookshelves/{id}/books")
+    List<Book> books(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
+        var bookshelf = get(authKey, id);
+        return bookRepository.findAll(Book.bookshelfIdQuery(bookshelf.getId()));
     }
 }
