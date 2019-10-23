@@ -1,14 +1,15 @@
 package wagnrd.bookagerserver.bookshelf;
 
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wagnrd.bookagerserver.SessionManager;
-import wagnrd.bookagerserver.data.Book;
-import wagnrd.bookagerserver.data.BookRepository;
-import wagnrd.bookagerserver.data.Bookshelf;
-import wagnrd.bookagerserver.data.BookshelfRepository;
+import wagnrd.bookagerserver.book.BookNotFoundException;
+import wagnrd.bookagerserver.data.*;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -16,13 +17,16 @@ public class BookshelfController {
     private final BookshelfRepository bookshelfRepository;
     private final BookRepository bookRepository;
     private final SessionManager sessionManager;
+    private final BookshelfBookRelRepository bookshelfBookRelRepository;
 
-    public BookshelfController(BookshelfRepository bookshelfRepository, BookRepository bookRepository) {
+    public BookshelfController(BookshelfRepository bookshelfRepository, BookRepository bookRepository, BookshelfBookRelRepository bookshelfBookRelRepository) {
         this.bookshelfRepository = bookshelfRepository;
         this.bookRepository = bookRepository;
+        this.bookshelfBookRelRepository = bookshelfBookRelRepository;
         this.sessionManager = SessionManager.getInstance();
     }
 
+    // Bookshelf management
     @GetMapping("/bookshelves")
     List<Bookshelf> getAll(@RequestHeader(value = "X-Auth-Key") String authKey) {
         var user = sessionManager.getSessionUser(authKey);
@@ -72,9 +76,49 @@ public class BookshelfController {
         return ResponseEntity.noContent().build();
     }
 
+    // Book relation management
     @GetMapping("/bookshelves/{id}/books")
     List<Book> books(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var bookshelf = get(authKey, id);
-        return bookRepository.findAll(Book.bookshelfIdQuery(bookshelf.getId()));
+
+        BookshelfBookRel exampleRelation = new BookshelfBookRel(new BookshelfBookId(id, null));
+        var relations = bookshelfBookRelRepository.findAll(Example.of(exampleRelation));
+
+        System.out.println(Arrays.toString(relations.toArray()));
+
+        var books = new LinkedList<Book>();
+        relations.forEach(relation -> books.add(relation.getBook()));
+
+        return books;
+    }
+
+    @PutMapping("/bookshelves/{bookshelfId}/books/{bookId}")
+    ResponseEntity<?> addBook(@RequestHeader(value = "X-Auth-Key") String authKey,
+                              @PathVariable Long bookshelfId,
+                              @PathVariable Long bookId) {
+        User user = sessionManager.getSessionUser(authKey);
+
+        // validation of user ownership
+        var bookshelf = bookshelfRepository
+                .findById(bookshelfId)
+                .orElseThrow(BookshelfNotFoundException::new);
+
+        if (!bookshelf.getOwner().equals(user.getName()))
+            throw new BookshelfNotFoundException();
+
+        var book = bookRepository
+                .findById(bookId)
+                .orElseThrow(BookNotFoundException::new);
+
+        if (!book.getOwner().equals(user.getName()))
+            throw new BookNotFoundException();
+
+        // TODO: Write new relation
+        var relation = new BookshelfBookRel(new BookshelfBookId(bookshelfId, bookId));
+        relation.setBook(book);
+        relation.setBookshelf(bookshelf);
+        bookshelfBookRelRepository.save(relation);
+
+        return ResponseEntity.ok().build();
     }
 }

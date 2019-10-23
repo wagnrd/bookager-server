@@ -60,10 +60,10 @@ public class BookController {
         book.setAuthor(newBook.getAuthor());
         book.setStatus(newBook.getStatus());
         book.setYear(newBook.getYear());
+        book.setLanguage(newBook.getLanguage());
         book.setRating(newBook.getRating());
         book.setDescription(newBook.getDescription());
         book.setComment(newBook.getComment());
-        book.setBookshelfId(newBook.getBookshelfId());
 
         return bookRepository.save(book);
     }
@@ -104,6 +104,9 @@ public class BookController {
     @DeleteMapping("/books/{id}")
     ResponseEntity<?> delete(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var book = get(authKey, id);
+
+        // TODO: first delete the entries in bookshelfBookRelRepository containing the book id
+
         bookRepository.delete(book);
 
         return ResponseEntity.noContent().build();

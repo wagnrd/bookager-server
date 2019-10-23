@@ -19,34 +19,30 @@ public class Book {
 
     private @Id @GeneratedValue Long id;
     private String owner;
-    private Long bookshelfId;
 
     private String title;
     private String author;
     private ReadingStatus status;
     private Short year;
+    private String language;
     private Byte rating;
     private String description;
     private String comment;
 
+    //private @OneToMany(mappedBy = "book") Set<BookshelfBookRel> bookshelfBookRels;
+
     public Book() {}
 
-    public Book(String title, String author, ReadingStatus status,
-                Short year, Byte rating, String description, String comment) {
+    public Book(String title, String author, ReadingStatus status, Short year, String language, Byte rating,
+                String description, String comment) {
         this.title = title;
         this.author = author;
         this.year = year;
         this.status = status;
+        this.language = language;
         this.rating = rating;
         this.description = description;
         this.comment = comment;
-    }
-
-    public static Example<Book> bookshelfIdQuery(Long bookshelfId) {
-        var book = new Book();
-        book.bookshelfId = bookshelfId;
-
-        return Example.of(book);
     }
 
     public static Example<Book> ownerQuery(String owner) {

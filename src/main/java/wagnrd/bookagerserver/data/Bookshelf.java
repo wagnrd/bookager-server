@@ -11,10 +11,11 @@ import javax.persistence.Id;
 @Entity
 public class Bookshelf {
     private @Id @GeneratedValue Long id;
+    private String owner;
+
     private String name;
 
-    private String owner;
-    //private @OneToMany(mappedBy = "bookshelfId") Set<Book> books;
+    //private @OneToMany(mappedBy = "bookshelf") Set<BookshelfBookRel> bookshelfBookRels;
 
     public Bookshelf() {}
 
@@ -23,7 +24,6 @@ public class Bookshelf {
         this.owner = owner;
     }
 
-    // Owner query
     public static Example<Bookshelf> ownerQuery(String owner) {
         var bookshelf = new Bookshelf();
         bookshelf.owner = owner;

@@ -11,8 +11,6 @@ public class User {
     private @Id String name;
     private String passwordHash;
 
-    //private @OneToMany(mappedBy = "owner") Set<Bookshelf> bookshelves;
-
     public User() {}
 
     public User(String name, String passwordHash) {
