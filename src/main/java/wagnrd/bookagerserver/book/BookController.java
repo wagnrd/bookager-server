@@ -68,19 +68,34 @@ public class BookController {
         return bookRepository.save(book);
     }
 
-    @PutMapping("/books/{id}/{attribute}/{value}")
-    Book update(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id, @PathVariable String attribute, @PathVariable String value) {
+    @PutMapping("/books/{id}/{attribute}")
+    ResponseEntity<?> updateAttribute(@RequestHeader(value = "X-Auth-Key") String authKey,
+                                      @RequestBody Book newBook,
+                                      @PathVariable Long id,
+                                      @PathVariable String attribute) {
         var book = get(authKey, id);
 
         try {
             Field field = Book.class.getDeclaredField(attribute);
-            field.setAccessible(true);
-            field.set(book, value);
 
-            return bookRepository.save(book);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // TODO: throw exception
-            return book;
+            if (field.getName().equals("id") || field.getName().equals("owner")) {
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body("Attribute \"" + attribute + "\" must not be updated!");
+            }
+
+            field.setAccessible(true);
+            field.set(book, field.get(newBook));
+
+            return ResponseEntity.ok(bookRepository.save(book));
+        } catch (NoSuchFieldException ignored) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Attribute \"" + attribute + "\" not found!");
+        } catch (Exception ignored) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unsolvable server error occured!");
         }
     }
 
