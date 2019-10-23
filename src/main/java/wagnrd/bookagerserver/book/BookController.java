@@ -68,6 +68,8 @@ public class BookController {
         return bookRepository.save(book);
     }
 
+    // Also accepts missing attributes in the request body and interprets them as nothing
+    // (results in setting the given attribute to null)
     @PutMapping("/books/{id}/{attribute}")
     ResponseEntity<?> updateAttribute(@RequestHeader(value = "X-Auth-Key") String authKey,
                                       @RequestBody Book newBook,
