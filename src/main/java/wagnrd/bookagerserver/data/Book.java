@@ -29,8 +29,6 @@ public class Book {
     private String description;
     private String comment;
 
-    //private @OneToMany(mappedBy = "book") Set<BookshelfBookRel> bookshelfBookRels;
-
     public Book() {}
 
     public Book(String title, String author, ReadingStatus status, Short year, String language, Byte rating,

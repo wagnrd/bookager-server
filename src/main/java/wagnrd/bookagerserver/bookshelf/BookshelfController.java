@@ -1,6 +1,5 @@
 package wagnrd.bookagerserver.bookshelf;
 
-import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +7,6 @@ import wagnrd.bookagerserver.SessionManager;
 import wagnrd.bookagerserver.book.BookNotFoundException;
 import wagnrd.bookagerserver.data.*;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,6 +69,11 @@ public class BookshelfController {
     @DeleteMapping("/bookshelves/{id}")
     ResponseEntity<?> delete(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var bookshelf = get(authKey, id);
+
+        // Delete BookshelfBookRels before deleting the bookshelf
+        var relations = bookshelfBookRelRepository.findAll(BookshelfBookRel.bookshelfIdQuery(id));
+        bookshelfBookRelRepository.deleteAll(relations);
+
         bookshelfRepository.delete(bookshelf);
 
         return ResponseEntity.noContent().build();
@@ -81,11 +84,7 @@ public class BookshelfController {
     List<Book> books(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var bookshelf = get(authKey, id);
 
-        BookshelfBookRel exampleRelation = new BookshelfBookRel(new BookshelfBookId(id, null));
-        var relations = bookshelfBookRelRepository.findAll(Example.of(exampleRelation));
-
-        System.out.println(Arrays.toString(relations.toArray()));
-
+        var relations = bookshelfBookRelRepository.findAll(BookshelfBookRel.bookshelfIdQuery(id));
         var books = new LinkedList<Book>();
         relations.forEach(relation -> books.add(relation.getBook()));
 
@@ -113,12 +112,8 @@ public class BookshelfController {
         if (!book.getOwner().equals(user.getName()))
             throw new BookNotFoundException();
 
-        // TODO: Write new relation
-        var relation = new BookshelfBookRel(new BookshelfBookId(bookshelfId, bookId));
-        relation.setBook(book);
-        relation.setBookshelf(bookshelf);
-        bookshelfBookRelRepository.save(relation);
+        bookshelfBookRelRepository.save(new BookshelfBookRel(bookshelf, book));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

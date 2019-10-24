@@ -15,8 +15,6 @@ public class Bookshelf {
 
     private String name;
 
-    //private @OneToMany(mappedBy = "bookshelf") Set<BookshelfBookRel> bookshelfBookRels;
-
     public Bookshelf() {}
 
     public Bookshelf(String name, String owner) {

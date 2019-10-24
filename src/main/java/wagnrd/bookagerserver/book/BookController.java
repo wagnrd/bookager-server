@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import wagnrd.bookagerserver.SessionManager;
 import wagnrd.bookagerserver.data.Book;
 import wagnrd.bookagerserver.data.BookRepository;
+import wagnrd.bookagerserver.data.BookshelfBookRel;
+import wagnrd.bookagerserver.data.BookshelfBookRelRepository;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -13,10 +15,12 @@ import java.util.List;
 @RestController
 public class BookController {
     private final BookRepository bookRepository;
+    private final BookshelfBookRelRepository bookshelfBookRelRepository;
     private final SessionManager sessionManager;
 
-    public BookController(BookRepository bookRepository) {
+    public BookController(BookRepository bookRepository, BookshelfBookRelRepository bookshelfBookRelRepository) {
         this.bookRepository = bookRepository;
+        this.bookshelfBookRelRepository = bookshelfBookRelRepository;
         this.sessionManager = SessionManager.getInstance();
     }
 
@@ -53,7 +57,7 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}")
-    Book update(@RequestHeader(value = "X-Auth-Key") String authKey, @RequestBody Book newBook, @PathVariable Long id) {
+    ResponseEntity<?> update(@RequestHeader(value = "X-Auth-Key") String authKey, @RequestBody Book newBook, @PathVariable Long id) {
         var book = get(authKey, id);
 
         book.setTitle(newBook.getTitle());
@@ -65,7 +69,7 @@ public class BookController {
         book.setDescription(newBook.getDescription());
         book.setComment(newBook.getComment());
 
-        return bookRepository.save(book);
+        return ResponseEntity.ok(bookRepository.save(book));
     }
 
     // Also accepts missing attributes in the request body and interprets them as nothing
@@ -97,7 +101,7 @@ public class BookController {
         } catch (Exception ignored) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unsolvable server error occured!");
+                    .body("A fatal server error occurred!");
         }
     }
 
@@ -105,7 +109,9 @@ public class BookController {
     ResponseEntity<?> delete(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var book = get(authKey, id);
 
-        // TODO: first delete the entries in bookshelfBookRelRepository containing the book id
+        // Deleting the BookshelfBookRels before deleting the book
+        var relations = bookshelfBookRelRepository.findAll(BookshelfBookRel.bookIdQuery(id));
+        bookshelfBookRelRepository.deleteAll(relations);
 
         bookRepository.delete(book);
 
