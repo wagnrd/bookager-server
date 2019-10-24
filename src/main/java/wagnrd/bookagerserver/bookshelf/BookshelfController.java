@@ -24,7 +24,10 @@ public class BookshelfController {
         this.sessionManager = SessionManager.getInstance();
     }
 
-    // Bookshelf management
+    //////////////////////////
+    // Bookshelf management //
+    //////////////////////////
+
     @GetMapping("/bookshelves")
     List<Bookshelf> getAll(@RequestHeader(value = "X-Auth-Key") String authKey) {
         var user = sessionManager.getSessionUser(authKey);
@@ -79,7 +82,10 @@ public class BookshelfController {
         return ResponseEntity.noContent().build();
     }
 
-    // Book relation management
+    //////////////////////////////
+    // Book relation management //
+    //////////////////////////////
+
     @GetMapping("/bookshelves/{id}/books")
     List<Book> books(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
         var bookshelf = get(authKey, id);
@@ -113,6 +119,23 @@ public class BookshelfController {
             throw new BookNotFoundException();
 
         bookshelfBookRelRepository.save(new BookshelfBookRel(bookshelf, book));
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/bookshelves/{bookshelfId}/books/{bookId}")
+    ResponseEntity<?> deleteBook(@RequestHeader(value = "X-Auth-Key") String authKey,
+                                 @PathVariable Long bookshelfId,
+                                 @PathVariable Long bookId) {
+        var relation = bookshelfBookRelRepository
+                .findById(new BookshelfBookId(bookshelfId, bookId))
+                .orElseThrow(() -> new RelationNotFoundException(Bookshelf.class, Book.class));
+
+        // validation of user ownership
+        // only necessary for one of both, because the check has been done for both while adding the relationship
+        get(authKey, bookshelfId);
+
+        bookshelfBookRelRepository.delete(relation);
 
         return ResponseEntity.noContent().build();
     }

@@ -4,25 +4,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wagnrd.bookagerserver.SessionManager;
-import wagnrd.bookagerserver.data.Book;
-import wagnrd.bookagerserver.data.BookRepository;
-import wagnrd.bookagerserver.data.BookshelfBookRel;
-import wagnrd.bookagerserver.data.BookshelfBookRelRepository;
+import wagnrd.bookagerserver.data.*;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
 public class BookController {
     private final BookRepository bookRepository;
+    private final BookshelfRepository bookshelfRepository;
     private final BookshelfBookRelRepository bookshelfBookRelRepository;
     private final SessionManager sessionManager;
 
-    public BookController(BookRepository bookRepository, BookshelfBookRelRepository bookshelfBookRelRepository) {
+    public BookController(BookRepository bookRepository, BookshelfRepository bookshelfRepository, BookshelfBookRelRepository bookshelfBookRelRepository) {
         this.bookRepository = bookRepository;
+        this.bookshelfRepository = bookshelfRepository;
         this.bookshelfBookRelRepository = bookshelfBookRelRepository;
         this.sessionManager = SessionManager.getInstance();
     }
+
+    /////////////////////
+    // Book management //
+    /////////////////////
 
     @GetMapping("/books")
     List<Book> all(@RequestHeader(value = "X-Auth-Key") String authKey) {
@@ -116,5 +120,20 @@ public class BookController {
         bookRepository.delete(book);
 
         return ResponseEntity.noContent().build();
+    }
+
+    ///////////////////////////////////
+    // Bookshelf relation management //
+    ///////////////////////////////////
+
+    @GetMapping("/books/{id}/bookshelves")
+    List<Bookshelf> bookshelves(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
+        var book = get(authKey, id);
+
+        var relations = bookshelfBookRelRepository.findAll(BookshelfBookRel.bookIdQuery(id));
+        var bookshelves = new LinkedList<Bookshelf>();
+        relations.forEach(relation -> bookshelves.add(relation.getBookshelf()));
+
+        return bookshelves;
     }
 }

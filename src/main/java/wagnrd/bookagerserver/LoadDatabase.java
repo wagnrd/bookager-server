@@ -24,11 +24,12 @@ public class LoadDatabase {
         User denni = new User("Denni", "test123");
         users.add(denni);
 
-        Set<Bookshelf> bookShelves = new HashSet<>();
-        Bookshelf testShelf = new Bookshelf("TestShelf", tabchen.getName());
-        bookShelves.add(testShelf);
-        Bookshelf testShelf2 = new Bookshelf("TestShelf2", tabchen.getName());
-        bookShelves.add(testShelf2);
+        Set<Bookshelf> bookshelves = new HashSet<>();
+
+        for (int i = 1; i < 2; ++i) {
+            var temp = new Bookshelf("TestShelf" + i, tabchen.getName());
+            bookshelves.add(temp);
+        }
 
         return args -> {
             for (var user : users) {
@@ -36,7 +37,7 @@ public class LoadDatabase {
                     log.info("Preload " + userRepository.save(user));
             }
 
-            for (var bookShelf : bookShelves) {
+            for (var bookShelf : bookshelves) {
                 if (!bookShelfRepository.exists(Example.of(bookShelf)))
                     log.info("Preload " + bookShelfRepository.save(bookShelf));
             }
