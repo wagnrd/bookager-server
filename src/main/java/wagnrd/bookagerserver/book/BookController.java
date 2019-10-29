@@ -68,6 +68,7 @@ public class BookController {
         book.setAuthor(newBook.getAuthor());
         book.setStatus(newBook.getStatus());
         book.setYear(newBook.getYear());
+        book.setGenre(newBook.getGenre());
         book.setLanguage(newBook.getLanguage());
         book.setRating(newBook.getRating());
         book.setDescription(newBook.getDescription());

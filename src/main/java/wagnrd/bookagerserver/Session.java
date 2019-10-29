@@ -3,7 +3,7 @@ package wagnrd.bookagerserver;
 import wagnrd.bookagerserver.data.User;
 
 public class Session extends Thread {
-    private final long keyDuration = 30_000_000L; // 30 mins
+    private final long keyDuration = 1_800_000L; // 30 mins
     private SessionManager manager;
 
     private String authKey;

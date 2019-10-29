@@ -1,6 +1,5 @@
 package wagnrd.bookagerserver.account;
 
-import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,18 @@ public class AccountController {
         this.sessionManager = SessionManager.getInstance();
     }
 
+    @CrossOrigin(exposedHeaders = "X-Auth-Key")
     @PostMapping("/login")
     ResponseEntity<?> login(@RequestBody User user) {
+        System.out.println(user);
+
         User realUser = userRepository
-                .findOne(Example.of(user))
+                .findById(user.getName())
                 .orElseThrow(UnauthorizedLoginException::new);
+
+        // TODO: Make login safer
+        if (!realUser.getPasswordHash().equals(user.getPasswordHash()))
+            throw new UnauthorizedLoginException();
 
         String authKey = sessionManager.createSession(realUser);
 

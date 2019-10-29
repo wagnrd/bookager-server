@@ -23,20 +23,22 @@ public class Book {
     private String title;
     private String author;
     private ReadingStatus status;
-    private Short year;
+    private String year;
+    private String genre;
     private String language;
-    private Byte rating;
+    private Float rating;
     private String description;
     private String comment;
 
     public Book() {}
 
-    public Book(String title, String author, ReadingStatus status, Short year, String language, Byte rating,
-                String description, String comment) {
+    public Book(String title, String author, ReadingStatus status, String year, String genre, String language,
+                Float rating, String description, String comment) {
         this.title = title;
         this.author = author;
         this.year = year;
         this.status = status;
+        this.genre = genre;
         this.language = language;
         this.rating = rating;
         this.description = description;

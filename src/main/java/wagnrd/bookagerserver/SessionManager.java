@@ -15,6 +15,7 @@ public class SessionManager {
 
     private final Map<String, Session> sessions = new HashMap<>();
     private final SecureRandom random = new SecureRandom();
+    //private byte[] randomBytes = new byte[16];
     private byte[] randomBytes = new byte[1];
 
     private SessionManager() {}
