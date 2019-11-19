@@ -17,13 +17,13 @@
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>true</enabled>
+                        <enabled>false</enabled>
                     </snapshots>
                 </repository>
                 <repository>
                     <id>github</id>
-                    <name>GitHub OWNER Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/OWNER</url>
+                    <name>GitHub wagnrd Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/wagnrd</url>
                 </repository>
             </repositories>
         </profile>
