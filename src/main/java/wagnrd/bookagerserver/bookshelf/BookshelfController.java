@@ -97,6 +97,17 @@ public class BookshelfController {
         return books;
     }
 
+    @GetMapping("/bookshelves/{id}/booksCount")
+    Integer booksCount(@RequestHeader(value = "X-Auth-Key") String authKey, @PathVariable Long id) {
+        var bookshelf = get(authKey, id);
+
+        var relations = bookshelfBookRelRepository.findAll(BookshelfBookRel.bookshelfIdQuery(id));
+        var books = new LinkedList<Book>();
+        relations.forEach(relation -> books.add(relation.getBook()));
+
+        return books.size();
+    }
+
     @PutMapping("/bookshelves/{bookshelfId}/books/{bookId}")
     ResponseEntity<?> addBook(@RequestHeader(value = "X-Auth-Key") String authKey,
                               @PathVariable Long bookshelfId,
