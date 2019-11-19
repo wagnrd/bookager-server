@@ -16,4 +16,4 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Deploy package
-      run: mvn deploy -Dregistry=https://maven.pkg.github.com/wagnrd -Dtoken=61f02f7e360dab0802316c5893d4e87f7ad274e3
+      run: mvn deploy
