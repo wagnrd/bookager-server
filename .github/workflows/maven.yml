@@ -13,7 +13,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Deploy package
-      run: mvn deploy
+    - env:
+        GITHUB_USERNAME: wagnrd
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and deploy package
+      run: mvn clean --settings settings.xml deploy
