@@ -21,5 +21,7 @@ jobs:
       #    GITHUB_USERNAME: wagnrd
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #  run: mvn clean --settings settings.xml deploy
+    - name: Build and install project
+      run: mvn clean install
     - name: Create Github release
       uses: frankjuniorr/github-create-release-action@v2.1.1
