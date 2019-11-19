@@ -16,8 +16,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build and deploy package
-      env:
-        GITHUB_USERNAME: wagnrd
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: mvn clean --settings settings.xml deploy
+      #- name: Build and deploy package
+      #  env:
+      #    GITHUB_USERNAME: wagnrd
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  run: mvn clean --settings settings.xml deploy
+    - name: Create Github release
+      uses: frankjuniorr/github-create-release-action@v2.1.1
